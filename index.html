@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rotating URL Display (Household Member)</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="contentFrame" src="about:blank"></iframe>
+
+    <script>
+        // Array of URLs to rotate, now with the two new departure board links
+        // Each object contains: { url: "your_url_string", duration: milliseconds }
+        const urlsToRotate = [
+            { url: "https://www.leddepartureboard.com/singleboard/SRC/to/VIC?hideClock=false&hideMenu=true&showStationName=true", duration: 10000 }, // Display for 10 seconds
+            { url: "https://www.leddepartureboard.com/singleboard/STE/to/ZFD?hideClock=false&hideMenu=true&showStationName=true", duration: 10000 }  // Display for 10 seconds
+        ];
+
+        let currentUrlIndex = 0;
+        const contentFrame = document.getElementById('contentFrame');
+        let rotationTimer; // To store the setTimeout ID for clearing
+
+        function loadNextUrl() {
+            // Clear any existing timer to prevent overlapping, though the logic below naturally handles this.
+            if (rotationTimer) {
+                clearTimeout(rotationTimer);
+            }
+
+            const currentItem = urlsToRotate[currentUrlIndex];
+            contentFrame.src = currentItem.url;
+            console.log("Loading URL: " + currentItem.url + " for " + (currentItem.duration / 1000) + " seconds.");
+            
+            // Set the timer for the duration of the *current* item
+            rotationTimer = setTimeout(() => {
+                // Move to the next URL, looping back to the start if we reach the end
+                currentUrlIndex = (currentUrlIndex + 1) % urlsToRotate.length;
+                loadNextUrl(); // Recursively call to load the next URL
+            }, currentItem.duration);
+        }
+
+        // Start the rotation immediately when the page loads, without an initial blank delay
+        loadNextUrl();
+    </script>
+</body>
+</html>
